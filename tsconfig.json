@@ -11,9 +11,9 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "target": "ES2020",
-    "types": [],
+    "types": ["node", "express"],
     // For nodejs:
-    // "lib": ["esnext"],
+    "lib": ["esnext"],
     // "types": ["node"],
     // and npm install -D @types/node
 
@@ -39,7 +39,7 @@
     "jsx": "react-jsx",
     "verbatimModuleSyntax": false,
     "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
+    // "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
     "baseUrl": "./src",
