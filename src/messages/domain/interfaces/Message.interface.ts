@@ -1,7 +1,7 @@
 export interface MessageInterface {
   id: string;
-  user_id: string;
-  content: string;
+  conversation_id: string;
   sender: string;
-  created_at: string;
+  content: string;
+  sent_at: string;
 }

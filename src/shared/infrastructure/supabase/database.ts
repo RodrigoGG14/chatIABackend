@@ -14,29 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
-      messages: {
+      conversations: {
         Row: {
-          content: string
-          created_at: string
           id: string
-          sender: string
+          latest_date: string
+          start_date: string
+          title: string
           user_id: string
         }
         Insert: {
+          id?: string
+          latest_date?: string
+          start_date?: string
+          title?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          latest_date?: string
+          start_date?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
           content: string
-          created_at?: string
+          conversation_id: string
+          id: string
+          sender: string
+          sent_at: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
           id?: string
           sender?: string
-          user_id?: string
+          sent_at?: string
         }
         Update: {
           content?: string
-          created_at?: string
+          conversation_id?: string
           id?: string
           sender?: string
-          user_id?: string
+          sent_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "messages_conservation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {

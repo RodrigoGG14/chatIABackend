@@ -4,7 +4,7 @@ import morgan from "morgan";
 import cors from "cors";
 
 import UserRoutes from "@/users/infrastructure/routes/User.routes";
-import ConversationRoutes from "@/conversation/infrastructure/routes/Conversation.routes";
+import ConversationRoutes from "@/conversations/infrastructure/routes/Conversation.routes";
 
 const app = express();
 const PORT = process.env.PORT || 3000;

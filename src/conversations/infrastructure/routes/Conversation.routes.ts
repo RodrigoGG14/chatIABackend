@@ -1,4 +1,4 @@
-import { ConversationController } from "@/conversation/infrastructure/controllers/Conversation.controller";
+import { ConversationController } from "@/conversations/infrastructure/controllers/Conversation.controller";
 import { Router } from "express";
 
 const UserRoutes: Router = Router();

@@ -13,7 +13,7 @@ export interface InsertUserMessageDTO extends InsertMessageWithUserDTOBase {
 
 export interface InsertAIMessageDTO extends InsertMessageWithUserDTOBase {
   senderType: "ai";
-  senderId: string; 
+  phone: string; 
 }
 
 export type InsertMessageWithUserDTO =

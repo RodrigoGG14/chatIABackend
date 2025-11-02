@@ -1,5 +1,5 @@
 export interface MessageInsertInterface {
-  user_id: string;
+  conversation_id: string;
   sender: string;
   content: string;
 }

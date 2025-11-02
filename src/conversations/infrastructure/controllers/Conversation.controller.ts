@@ -1,7 +1,8 @@
-import { EnsureUserAndInsertMessageUseCase } from "@/conversation/application/EnsureUserAndInsertMessage.application";
+import { EnsureUserAndInsertMessageUseCase } from "@/conversations/application/EnsureUserAndInsertMessage.application";
 
-import { InsertMessageWithUserDTO } from "@/conversation/application/DTOs/InsertMessageWithUserDTO";
+import { InsertMessageWithUserDTO } from "@/conversations/application/DTOs/InsertMessageWithUserDTO";
 
+import { ConversationRepository } from "@/conversations/infrastructure/repositories/Conversation.repository";
 import { MessageRepository } from "@/messages/infrastructure/repositories/Message.repository";
 import { UserRepository } from "@/users/infrastructure/repositories/User.repository";
 
@@ -13,15 +14,17 @@ export class ConversationController {
   constructor() {
     const userRepository = new UserRepository();
     const messageRepository = new MessageRepository();
+    const conversationRepository = new ConversationRepository();
     this.insertMessageUseCase = new EnsureUserAndInsertMessageUseCase(
       userRepository,
-      messageRepository
+      messageRepository,
+      conversationRepository
     );
   }
 
   async insertMessage(req: Request, res: Response): Promise<void> {
     try {
-      const { senderType, phone, name, senderId, content } = req.body;
+      const { senderType, phone, name, content } = req.body;
 
       if (!content || typeof content !== "string") {
         res.status(400).json({
@@ -46,16 +49,16 @@ export class ConversationController {
 
         obj = { senderType, phone, name, content };
       } else if (senderType === "ai") {
-        if (!senderId) {
+        if (!phone) {
           res.status(400).json({
             success: false,
-            message: "senderId is required for AI messages.",
-            error: { code: "MISSING_SENDER_ID", message: "Missing senderId" },
+            message: "Phone is required for AI messages.",
+            error: { code: "MISSING_SENDER_ID", message: "Missing phone" },
           });
           return;
         }
 
-        obj = { senderType, senderId, content };
+        obj = { senderType, phone, content };
       } else {
         res.status(400).json({
           success: false,
