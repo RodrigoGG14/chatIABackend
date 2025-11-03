@@ -38,7 +38,7 @@ export class MessageRepository implements MessageRepositoryInterface {
       .from("messages")
       .select("*")
       .eq("conversation_id", conversationId)
-      .order("created_at", { ascending: true }); // mensajes del más viejo al más nuevo
+      .order("sent_at", { ascending: true }); // mensajes del más viejo al más nuevo
 
     if (error) {
       throw new Error(`Error fetching conversations: ${error.message}`);
