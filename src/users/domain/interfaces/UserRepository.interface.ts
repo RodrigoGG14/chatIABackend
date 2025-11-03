@@ -5,4 +5,5 @@ export interface UserRepositoryInterface {
   getUsers(): Promise<UserInterface[]>;
   insertUser(user: UserInsertInterface): Promise<UserInterface>;
   findByPhone(phone: string): Promise<UserInterface | null>;
+  findByUserId(userId: string): Promise<UserInterface | null>;
 }

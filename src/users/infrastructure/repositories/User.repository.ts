@@ -56,4 +56,18 @@ export class UserRepository implements UserRepositoryInterface {
 
     return data ?? null;
   }
+
+  async findByUserId(userId: string): Promise<UserInterface | null> {
+    const { data, error } = await this.client
+      .from("users")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (error && error.code !== "PGRST116") {
+      throw new Error(`Error fetching user by user_id: ${error.message}`);
+    }
+
+    return data ?? null;
+  }
 }
