@@ -62,4 +62,20 @@ export class ConversationRepository implements ConversationRepositoryInterface {
 
     return data;
   }
+
+  async updateHumanOverrideStatus(
+    value: boolean,
+    conversationId: string
+  ): Promise<void> {
+    const { error } = await this.client
+      .from("conversations")
+      .update({ human_override: value })
+      .eq("id", conversationId);
+
+    if (error) {
+      throw new Error(
+        `Error updating human_override for conversation ${conversationId}: ${error.message}`
+      );
+    }
+  }
 }

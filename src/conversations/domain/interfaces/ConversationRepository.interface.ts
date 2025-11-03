@@ -6,4 +6,5 @@ export interface ConversationRepositoryInterface {
   insertConversation(conversation: ConversationInsertInterface): Promise<ConversationInterface>;
   getConversations(): Promise<ConversationInterface[]>
   findByPhone(phone: string): Promise<ConversationInterface | null>
+  updateHumanOverrideStatus(value: boolean, conversationId: string): Promise<void>
 }

@@ -25,9 +25,9 @@ export class InsertConversationUseCase {
         error instanceof Error ? error.message : "Unknown error creating user";
       return {
         success: false,
-        message: "Failed to create user",
+        message: "Failed to create conversation",
         error: {
-          code: "USER_CREATION_FAILED",
+          code: "CONVERSATION_CREATION_FAILED",
           message,
         },
       };

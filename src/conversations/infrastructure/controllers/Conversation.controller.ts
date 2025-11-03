@@ -13,12 +13,14 @@ import { UserRepository } from "@/users/infrastructure/repositories/User.reposit
 import { ConversationInterface } from "@/conversations/domain/interfaces/Conversation.interface";
 
 import { Request, Response } from "express";
+import { UpdateHumanOverrideStatusUseCase } from "@/conversations/application/UpdateHumanOverrideStatus.application";
 
 export class ConversationController {
   private readonly insertMessageUseCase: EnsureUserAndInsertMessageUseCase;
   private readonly getConversationsUseCase: GetConversationsUseCase;
   private readonly findConversationByUserIdUseCase: FindConversationByUserIdUseCase;
   private readonly findUserByPhoneUseCase: FindUserByPhoneUseCase;
+  private readonly updateHumanOverrideStatusUseCase: UpdateHumanOverrideStatusUseCase;
 
   constructor() {
     const userRepository = new UserRepository();
@@ -36,6 +38,8 @@ export class ConversationController {
       conversationRepository
     );
     this.findUserByPhoneUseCase = new FindUserByPhoneUseCase(userRepository);
+    this.updateHumanOverrideStatusUseCase =
+      new UpdateHumanOverrideStatusUseCase(conversationRepository);
   }
 
   async insertMessage(req: Request, res: Response): Promise<void> {
@@ -197,6 +201,63 @@ export class ConversationController {
       }
 
       res.status(200).json(conversationResult);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: {
+          code: "INTERNAL_ERROR",
+          message: (error as Error).message || "Unexpected error occurred",
+        },
+      });
+    }
+  }
+
+  async updateHumanOverrideStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const { conversationId } = req.params;
+
+      if (!conversationId) {
+        res.status(400).json({
+          success: false,
+          message: "conversationId is required",
+          error: {
+            code: "MISSING_PARAM",
+            message: "Missing 'conversationId' parameter in request",
+          },
+        });
+        return;
+      }
+
+      const { enabled } = req.body;
+
+      if (!enabled || typeof enabled !== "boolean") {
+        res.status(400).json({
+          success: false,
+          message: "enabled is required and must be a boolean.",
+          error: { code: "INVALID_CONTENT", message: "Missing content field" },
+        });
+        return;
+      }
+
+      const result = await this.updateHumanOverrideStatusUseCase.execute(
+        enabled,
+        conversationId
+      );
+
+      if (!result.success) {
+        res.status(500).json({
+          success: false,
+          message: result.message,
+          error: result.error ?? {
+            code: "UNKNOWN_ERROR",
+            message: "Failed to update human override status",
+          },
+        });
+        return;
+      }
+
+      res.status(200).json(result);
     } catch (error) {
       res.status(500).json({
         success: false,

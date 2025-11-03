@@ -14,5 +14,9 @@ ConversationRoutes.get(
   "/conversations/:phone",
   controller.getConversationByPhone.bind(controller)
 );
+ConversationRoutes.patch(
+  "/conversations/:conversationId/human-override",
+  controller.updateHumanOverrideStatus.bind(controller)
+);
 
 export default ConversationRoutes;
