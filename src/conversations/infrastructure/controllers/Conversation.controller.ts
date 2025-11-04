@@ -60,6 +60,28 @@ export class ConversationController {
       const { senderType, phone, name, content } = req.body;
       const file = req.file;
 
+      // ✅ Validaciones
+      if (!senderType || !["user", "ai", "admin"].includes(senderType)) {
+        res.status(400).json({
+          success: false,
+          message: "Invalid senderType. Must be 'user', 'ai' or 'admin'.",
+          error: {
+            code: "INVALID_SENDER_TYPE",
+            message: "senderType must be 'user', 'ai' or 'admin'",
+          },
+        });
+        return;
+      }
+
+      if (!phone) {
+        res.status(400).json({
+          success: false,
+          message: "Phone is required.",
+          error: { code: "MISSING_PHONE", message: "Missing phone field" },
+        });
+        return;
+      }
+
       if (typeof content !== "string") {
         res.status(400).json({
           success: false,
@@ -69,54 +91,37 @@ export class ConversationController {
         return;
       }
 
+      // ✅ Construcción segura del DTO
       let obj: InsertMessageWithUserDTO;
 
       if (senderType === "user") {
-        if (!phone) {
-          res.status(400).json({
-            success: false,
-            message: "Phone is required for user messages.",
-            error: { code: "MISSING_PHONE", message: "Missing phone field" },
-          });
-          return;
-        }
-
         obj = { senderType, phone, name, content };
-      } else if (senderType === "ai") {
-        if (!phone) {
-          res.status(400).json({
-            success: false,
-            message: "Phone is required for AI messages.",
-            error: { code: "MISSING_SENDER_ID", message: "Missing phone" },
-          });
-          return;
-        }
-
+      } else if (senderType === "ai" || senderType === "admin") {
         obj = { senderType, phone, content };
       } else {
+        // Fallback de seguridad (TypeScript exige todas las rutas)
         res.status(400).json({
           success: false,
-          message: "Invalid senderType. Must be 'user' or 'ai'.",
+          message: "Invalid senderType. Must be 'user', 'ai' or 'admin'.",
           error: {
             code: "INVALID_SENDER_TYPE",
-            message: "senderType must be 'user' or 'ai'",
+            message: "senderType must be 'user', 'ai' or 'admin'",
           },
         });
         return;
       }
 
+      // ✅ Si hay archivo, agregamos `media`
       if (file) {
-        obj = {
-          ...obj,
-          media: {
-            fileBuffer: file.buffer,
-            fileName: file.originalname,
-            mimeType: file.mimetype,
-            category: this.detectCategory(file.mimetype),
-          },
-        } as any;
+        obj.media = {
+          fileBuffer: file.buffer,
+          fileName: file.originalname,
+          mimeType: file.mimetype,
+          category: this.detectCategory(file.mimetype),
+        };
       }
 
+      // ✅ Ejecutar el caso de uso
       const useCaseResult = await this.insertMessageUseCase.execute(obj);
 
       if (!useCaseResult.success) {
@@ -125,7 +130,6 @@ export class ConversationController {
       }
 
       res.status(200).json(useCaseResult);
-      return;
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Unknown server error";
@@ -138,7 +142,6 @@ export class ConversationController {
           message,
         },
       });
-      return;
     }
   }
 

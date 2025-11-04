@@ -145,7 +145,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      insert_message_cascade: {
+        Args: {
+          p_content: string
+          p_name: string
+          p_phone: string
+          p_sender: string
+        }
+        Returns: {
+          conversation_id: string
+          message_id: string
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

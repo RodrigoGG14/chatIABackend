@@ -46,4 +46,13 @@ export class MessageRepository implements MessageRepositoryInterface {
 
     return data ?? [];
   }
+
+  async deleteById(messageId: string): Promise<void> {
+    const { error } = await this.client
+      .from("messages")
+      .delete()
+      .eq("id", messageId);
+
+    if (error) throw new Error(`Error deleting message: ${error.message}`);
+  }
 }

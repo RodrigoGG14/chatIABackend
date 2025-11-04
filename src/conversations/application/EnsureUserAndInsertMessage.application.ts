@@ -134,117 +134,78 @@ export class EnsureUserAndInsertMessageUseCase {
     return { user, conversation, createdUser };
   }
 
-  /**
-   * Inserta un mensaje en la conversación indicada y devuelve ApiResponse tipado.
-   */
-  private async insertMessageAndBuildResponse(
-    conversation: ConversationInterface,
-    payload: {
-      content: string;
-      sender: "user" | "ai";
-      senderInfo: { id: string; name?: string; phone?: string };
-      createdUser: boolean;
-      media?: InsertMessageWithUserDTO["media"];
-    }
-  ): Promise<ApiResponse<InsertMessageWithUserResponseDTO>> {
-    const messageRes = await this.insertMessageUseCase.execute({
-      conversation_id: conversation.id,
-      content: payload.content,
-      sender: payload.sender,
-    });
-
-    if (!messageRes.success || !messageRes.data) {
-      return {
-        success: false,
-        message: "Failed to create message",
-        error: messageRes.error ?? {
-          code: "MESSAGE_CREATION_FAILED",
-          message: "Could not create message",
-        },
-      };
-    }
-
-    // Si hay archivo adjunto, subirlo a Supabase Storage
-    if (payload.media) {
-      console.log("Subiendo archivo");
-      
-      const uploadRes = await this.uploadAttachmentUseCase.execute({
-        messageId: messageRes.data.id,
-        fileBuffer: payload.media.fileBuffer,
-        fileName: payload.media.fileName,
-        mimeType: payload.media.mimeType,
-        category: payload.media.category,
-      });
-
-      if (!uploadRes.success) {
-        console.error("Error uploading attachment:", uploadRes.error?.message);
-      }
-    }
-
-    return {
-      success: true,
-      message:
-        payload.sender === "user"
-          ? "Message created successfully"
-          : "AI message created successfully",
-      data: {
-        messageId: messageRes.data.id,
-        content: payload.content,
-        timestamp: messageRes.data.sent_at,
-        sender:
-          payload.sender === "user"
-            ? {
-                id: payload.senderInfo.id,
-                phone: payload.senderInfo.phone!,
-                name: payload.senderInfo.name!,
-              }
-            : {
-                id: payload.senderInfo.id,
-                name: payload.senderInfo.name ?? "AI",
-              },
-        createdUser: payload.createdUser,
-      },
-    };
-  }
-
+  // Solo muestro los cambios clave dentro de execute()
   async execute(
     dto: InsertMessageWithUserDTO
   ): Promise<ApiResponse<InsertMessageWithUserResponseDTO>> {
     if (dto.senderType === "user") {
-      // Flujo USER: crea usuario si no existe
-      const ensured = await this.ensureUserAndConversationByPhone(
-        dto.phone,
-        dto.name,
-        /* createUserIfMissing */ true
-      );
+      // ✅ USAR RPC para atomicidad de user+conversation+message
+      try {
+        const nameValue = dto.name ?? "";
+        const { message_id, user_id } =
+          await this.conversationRepository.insertMessageCascade({
+            phone: dto.phone,
+            name: nameValue,
+            content: dto.content, // puede ser ""
+            sender: "user",
+          });
 
-      if ("error" in ensured) {
+        // Si viene media, subirla; si falla, borramos el mensaje insertado por el RPC
+        if (dto.media) {
+          const uploadRes = await this.uploadAttachmentUseCase.execute({
+            messageId: message_id,
+            fileBuffer: dto.media.fileBuffer,
+            fileName: dto.media.fileName,
+            mimeType: dto.media.mimeType,
+            category: dto.media.category,
+          });
+
+          if (!uploadRes.success) {
+            // rollback compensatorio del mensaje
+            await this.messageRepository.deleteById(message_id);
+            return {
+              success: false,
+              message: "Upload failed, message rolled back",
+              error: uploadRes.error ?? {
+                code: "UPLOAD_FAILED",
+                message: "Attachment upload failed",
+              },
+            };
+          }
+        }
+
+        // Puedes recuperar datos del usuario si quieres mostrarlos (opcional).
+        // Aquí armamos la respuesta mínima.
         return {
-          success: false,
-          message: "Failed to ensure user/conversation",
-          error: ensured.error ?? {
-            code: "UNKNOWN_ERROR",
-            message: "Unknown error ensuring user/conversation",
+          success: true,
+          message: "Message created successfully",
+          data: {
+            messageId: message_id,
+            content: dto.content,
+            timestamp: new Date().toISOString(), // Si necesitas exacto, consulta el mensaje
+            sender: {
+              id: user_id,
+              name: dto.name ?? "No name",
+              phone: dto.phone,
+            },
+            createdUser: false,
           },
         };
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Unknown RPC error";
+        return {
+          success: false,
+          message: "Failed to create message with RPC",
+          error: { code: "RPC_ERROR", message: msg },
+        };
       }
-
-      const { user, conversation, createdUser } = ensured;
-
-      return this.insertMessageAndBuildResponse(conversation, {
-        content: dto.content,
-        sender: "user",
-        senderInfo: { id: user.id, name: user.name, phone: user.phone },
-        createdUser,
-        media: dto.media,
-      });
     }
 
-    if (dto.senderType === "ai") {
-      // Flujo AI: NO crea usuario si no existe (pero sí crea conversación si falta)
+    if (dto.senderType === "ai" || dto.senderType === "admin") {
+      // 🚦 Flujo AI: NO crear usuario si no existe (misma lógica que ya manejabas)
       const ensured = await this.ensureUserAndConversationByPhone(
         dto.phone,
-        /* name */ undefined,
+        undefined,
         /* createUserIfMissing */ false
       );
 
@@ -261,22 +222,70 @@ export class EnsureUserAndInsertMessageUseCase {
 
       const { conversation } = ensured;
 
-      return this.insertMessageAndBuildResponse(conversation, {
+      // Insertar mensaje AI "normal"
+      const baseRes = await this.insertMessageUseCase.execute({
+        conversation_id: conversation.id,
         content: dto.content,
-        sender: "ai",
-        senderInfo: { id: "ai-system", name: "AI" },
-        createdUser: false,
-        media: dto.media,
+        sender: dto.senderType,
       });
+
+      if (!baseRes.success || !baseRes.data) {
+        return {
+          success: false,
+          message: "Failed to create AI message",
+          error: baseRes.error ?? {
+            code: "MESSAGE_CREATION_FAILED",
+            message: "Could not create AI message",
+          },
+        };
+      }
+
+      // Si IA algún día adjunta archivos, los subes también (opcional)
+      if (dto.media) {
+        const uploadRes = await this.uploadAttachmentUseCase.execute({
+          messageId: baseRes.data.id,
+          fileBuffer: dto.media.fileBuffer,
+          fileName: dto.media.fileName,
+          mimeType: dto.media.mimeType,
+          category: dto.media.category,
+        });
+
+        if (!uploadRes.success) {
+          // rollback del mensaje AI
+          await this.messageRepository.deleteById(baseRes.data.id);
+          return {
+            success: false,
+            message: `Upload failed, ${dto.senderType.toUpperCase()} message rolled back`,
+            error: uploadRes.error ?? {
+              code: "UPLOAD_FAILED",
+              message: "Attachment upload failed",
+            },
+          };
+        }
+      }
+
+      return {
+        success: true,
+        message: `${dto.senderType.toUpperCase()} message created successfully`,
+        data: {
+          messageId: baseRes.data.id,
+          content: dto.content,
+          timestamp: baseRes.data.sent_at,
+          sender: {
+            id: dto.senderType === "ai" ? "ai-system" : "admin-system",
+            name: dto.senderType === "ai" ? "AI" : "Admin",
+          },
+          createdUser: false,
+        },
+      };
     }
 
-    // Chequeo exhaustivo para discriminated union (nunca debería alcanzarse)
     return {
       success: false,
       message: "Invalid senderType",
       error: {
         code: "INVALID_SENDER_TYPE",
-        message: "senderType must be 'user' or 'ai'",
+        message: "senderType must be 'user', 'ai' or 'admin'",
       },
     };
   }
