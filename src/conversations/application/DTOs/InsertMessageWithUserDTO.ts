@@ -1,8 +1,16 @@
 export type SenderType = "user" | "ai";
 
+export interface MediaAttachmentDTO {
+  fileBuffer: Buffer;
+  fileName: string;
+  mimeType: string;
+  category: "image" | "audio" | "video" | "file"; 
+}
+
 export interface InsertMessageWithUserDTOBase {
   content: string;
   senderType: SenderType;
+  media?: MediaAttachmentDTO; 
 }
 
 export interface InsertUserMessageDTO extends InsertMessageWithUserDTOBase {
@@ -13,7 +21,7 @@ export interface InsertUserMessageDTO extends InsertMessageWithUserDTOBase {
 
 export interface InsertAIMessageDTO extends InsertMessageWithUserDTOBase {
   senderType: "ai";
-  phone: string; 
+  phone: string;
 }
 
 export type InsertMessageWithUserDTO =

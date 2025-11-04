@@ -49,6 +49,44 @@ export type Database = {
           },
         ]
       }
+      message_attachments: {
+        Row: {
+          category: string
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          message_id: string
+          mime_type: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          file_name: string
+          file_path: string
+          id?: string
+          message_id: string
+          mime_type: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          message_id?: string
+          mime_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_attachments_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string

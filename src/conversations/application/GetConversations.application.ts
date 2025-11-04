@@ -32,8 +32,6 @@ export class GetConversationsUseCase {
         const phone = userPhoneMap.get(convo.user_id);
 
         if (!phone) {
-          // ❌ No lanzar error aquí
-          // ✅ Retornar error estándar para el controller
           return {
             success: false,
             message: `User phone not found for user_id: ${convo.user_id}`,

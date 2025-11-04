@@ -1,8 +1,6 @@
 import { EnsureUserAndInsertMessageUseCase } from "@/conversations/application/EnsureUserAndInsertMessage.application";
-
 import { UpdateHumanOverrideStatusUseCase } from "@/conversations/application/UpdateHumanOverrideStatus.application";
 import { FindConversationByUserIdUseCase } from "@/conversations/application/FindConversationByUserId.application";
-import { InsertMessageWithUserDTO } from "@/conversations/application/DTOs/InsertMessageWithUserDTO";
 import { GetConversationsUseCase } from "@/conversations/application/GetConversations.application";
 import { UpdateTitleUseCase } from "@/conversations/application/UpdateTitle.application";
 import { FindUserByPhoneUseCase } from "@/users/application/FindByPhone.application";
@@ -11,6 +9,8 @@ import { ApiResponse } from "@/shared/application/ApiResponse";
 import { ConversationRepository } from "@/conversations/infrastructure/repositories/Conversation.repository";
 import { MessageRepository } from "@/messages/infrastructure/repositories/Message.repository";
 import { UserRepository } from "@/users/infrastructure/repositories/User.repository";
+
+import { InsertMessageWithUserDTO } from "@/conversations/application/DTOs/InsertMessageWithUserDTO";
 
 import { ConversationInterface } from "@/conversations/domain/interfaces/Conversation.interface";
 
@@ -46,11 +46,21 @@ export class ConversationController {
     this.updateTitleUseCase = new UpdateTitleUseCase(conversationRepository);
   }
 
+  private detectCategory(
+    mimeType: string
+  ): "image" | "audio" | "video" | "file" {
+    if (mimeType.startsWith("image/")) return "image";
+    if (mimeType.startsWith("audio/")) return "audio";
+    if (mimeType.startsWith("video/")) return "video";
+    return "file";
+  }
+
   async insertMessage(req: Request, res: Response): Promise<void> {
     try {
       const { senderType, phone, name, content } = req.body;
+      const file = req.file;
 
-      if (!content || typeof content !== "string") {
+      if (typeof content !== "string") {
         res.status(400).json({
           success: false,
           message: "Content is required and must be a string.",
@@ -59,7 +69,7 @@ export class ConversationController {
         return;
       }
 
-      let obj: InsertMessageWithUserDTO | undefined;
+      let obj: InsertMessageWithUserDTO;
 
       if (senderType === "user") {
         if (!phone) {
@@ -93,6 +103,18 @@ export class ConversationController {
           },
         });
         return;
+      }
+
+      if (file) {
+        obj = {
+          ...obj,
+          media: {
+            fileBuffer: file.buffer,
+            fileName: file.originalname,
+            mimeType: file.mimetype,
+            category: this.detectCategory(file.mimetype),
+          },
+        } as any;
       }
 
       const useCaseResult = await this.insertMessageUseCase.execute(obj);
@@ -301,7 +323,10 @@ export class ConversationController {
         return;
       }
 
-      const result = await this.updateTitleUseCase.execute(title, conversationId);
+      const result = await this.updateTitleUseCase.execute(
+        title,
+        conversationId
+      );
 
       if (!result.success) {
         res.status(500).json({

@@ -1,10 +1,11 @@
 import { ConversationController } from "@/conversations/infrastructure/controllers/Conversation.controller";
+import { upload } from "@/shared/infrastructure/multerConfig";
 import { Router } from "express";
 
 const ConversationRoutes: Router = Router();
 const controller = new ConversationController();
 
-ConversationRoutes.post("/messages", (req, res) =>
+ConversationRoutes.post("/messages", upload.single("file"), (req, res) =>
   controller.insertMessage(req, res)
 );
 ConversationRoutes.get("/conversations", (req, res) =>

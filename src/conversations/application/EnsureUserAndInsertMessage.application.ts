@@ -1,4 +1,6 @@
+import { MessageAttachmentRepository } from "@/messageAttachments/infrastructure/repositories/MessageAttachment.repository";
 import { ConversationRepositoryInterface } from "@/conversations/domain/interfaces/ConversationRepository.interface";
+import { UploadAttachmentUseCase } from "@/messageAttachments/application/UploadAttachment.application";
 import { MessageRepositoryInterface } from "@/messages/domain/interfaces/MessageRepository.interface";
 import { UserRepositoryInterface } from "@/users/domain/interfaces/UserRepository.interface";
 
@@ -19,11 +21,13 @@ export class EnsureUserAndInsertMessageUseCase {
   private readonly insertMessageUseCase: InsertMessageUseCase;
   private readonly insertConversationUserCase: InsertConversationUseCase;
   private readonly findConversationByUserIdUseCase: FindConversationByUserIdUseCase;
+  private readonly uploadAttachmentUseCase: UploadAttachmentUseCase;
 
   constructor(
     private readonly userRepository: UserRepositoryInterface,
     private readonly messageRepository: MessageRepositoryInterface,
-    private readonly conversationRepository: ConversationRepositoryInterface
+    private readonly conversationRepository: ConversationRepositoryInterface,
+    private readonly attachmentRepository = new MessageAttachmentRepository()
   ) {
     this.insertUserUseCase = new InsertUserUseCase(this.userRepository);
     this.insertMessageUseCase = new InsertMessageUseCase(
@@ -34,6 +38,9 @@ export class EnsureUserAndInsertMessageUseCase {
     );
     this.findConversationByUserIdUseCase = new FindConversationByUserIdUseCase(
       this.conversationRepository
+    );
+    this.uploadAttachmentUseCase = new UploadAttachmentUseCase(
+      this.attachmentRepository
     );
   }
 
@@ -77,12 +84,10 @@ export class EnsureUserAndInsertMessageUseCase {
 
       if (!userRes.success || !userRes.data) {
         return {
-          error:
-            userRes.error ??
-            ({
-              code: "USER_CREATION_FAILED",
-              message: "Could not create user",
-            }),
+          error: userRes.error ?? {
+            code: "USER_CREATION_FAILED",
+            message: "Could not create user",
+          },
         };
       }
 
@@ -92,40 +97,36 @@ export class EnsureUserAndInsertMessageUseCase {
 
     // 2) Conversación existente
     console.log("Buscado conversacion...");
-    
+
     const convRes = await this.findConversationByUserIdUseCase.execute(user.id);
     let conversation = convRes.data ?? null;
 
-    console.log("busqueda de conversacion terminada" + " --> " +  conversation);
-    
+    console.log("busqueda de conversacion terminada" + " --> " + conversation);
+
     // 3) Crear conversación si no existe
     if (!conversation) {
       console.log("La conversacion no existe la vamos a crear");
       console.log("CReadndo");
-      
+
       const convCreateRes = await this.insertConversationUserCase.execute({
         user_id: user.id,
         title: `${user.phone} - ${user.name}`,
       });
 
       console.log("la creacion de la conversacion termino, salio bien ?");
-      
 
       if (!convCreateRes.success || !convCreateRes.data) {
         console.log("Error al crear la conversacion");
-        
+
         return {
-          error:
-            convCreateRes.error ??
-            ({
-              code: "CONVERSATION_CREATION_FAILED",
-              message: "Could not create conversation",
-            }),
+          error: convCreateRes.error ?? {
+            code: "CONVERSATION_CREATION_FAILED",
+            message: "Could not create conversation",
+          },
         };
       }
 
       console.log("Conversacion creado correctamente -> " + conversation);
-      
 
       conversation = convCreateRes.data;
     }
@@ -143,6 +144,7 @@ export class EnsureUserAndInsertMessageUseCase {
       sender: "user" | "ai";
       senderInfo: { id: string; name?: string; phone?: string };
       createdUser: boolean;
+      media?: InsertMessageWithUserDTO["media"];
     }
   ): Promise<ApiResponse<InsertMessageWithUserResponseDTO>> {
     const messageRes = await this.insertMessageUseCase.execute({
@@ -160,6 +162,23 @@ export class EnsureUserAndInsertMessageUseCase {
           message: "Could not create message",
         },
       };
+    }
+
+    // Si hay archivo adjunto, subirlo a Supabase Storage
+    if (payload.media) {
+      console.log("Subiendo archivo");
+      
+      const uploadRes = await this.uploadAttachmentUseCase.execute({
+        messageId: messageRes.data.id,
+        fileBuffer: payload.media.fileBuffer,
+        fileName: payload.media.fileName,
+        mimeType: payload.media.mimeType,
+        category: payload.media.category,
+      });
+
+      if (!uploadRes.success) {
+        console.error("Error uploading attachment:", uploadRes.error?.message);
+      }
     }
 
     return {
@@ -217,6 +236,7 @@ export class EnsureUserAndInsertMessageUseCase {
         sender: "user",
         senderInfo: { id: user.id, name: user.name, phone: user.phone },
         createdUser,
+        media: dto.media,
       });
     }
 
@@ -246,11 +266,11 @@ export class EnsureUserAndInsertMessageUseCase {
         sender: "ai",
         senderInfo: { id: "ai-system", name: "AI" },
         createdUser: false,
+        media: dto.media,
       });
     }
 
     // Chequeo exhaustivo para discriminated union (nunca debería alcanzarse)
-    const _exhaustiveCheck: never = dto;
     return {
       success: false,
       message: "Invalid senderType",
