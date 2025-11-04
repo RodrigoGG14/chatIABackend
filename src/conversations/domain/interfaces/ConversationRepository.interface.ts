@@ -3,8 +3,14 @@ import { ConversationInterface } from "@/conversations/domain/interfaces/Convers
 
 export interface ConversationRepositoryInterface {
   findByUserId(user_id: string): Promise<ConversationInterface | null>;
-  insertConversation(conversation: ConversationInsertInterface): Promise<ConversationInterface>;
-  getConversations(): Promise<ConversationInterface[]>
-  findByPhone(phone: string): Promise<ConversationInterface | null>
-  updateHumanOverrideStatus(value: boolean, conversationId: string): Promise<void>
+  insertConversation(
+    conversation: ConversationInsertInterface
+  ): Promise<ConversationInterface>;
+  getConversations(): Promise<ConversationInterface[]>;
+  findByPhone(phone: string): Promise<ConversationInterface | null>;
+  updateHumanOverrideStatus(
+    value: boolean,
+    conversationId: string
+  ): Promise<void>;
+  updateTitle(title: string, conversationId: string): Promise<void>;
 }

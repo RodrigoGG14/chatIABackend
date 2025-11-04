@@ -1,8 +1,10 @@
 import { EnsureUserAndInsertMessageUseCase } from "@/conversations/application/EnsureUserAndInsertMessage.application";
 
+import { UpdateHumanOverrideStatusUseCase } from "@/conversations/application/UpdateHumanOverrideStatus.application";
 import { FindConversationByUserIdUseCase } from "@/conversations/application/FindConversationByUserId.application";
 import { InsertMessageWithUserDTO } from "@/conversations/application/DTOs/InsertMessageWithUserDTO";
 import { GetConversationsUseCase } from "@/conversations/application/GetConversations.application";
+import { UpdateTitleUseCase } from "@/conversations/application/UpdateTitle.application";
 import { FindUserByPhoneUseCase } from "@/users/application/FindByPhone.application";
 import { ApiResponse } from "@/shared/application/ApiResponse";
 
@@ -13,7 +15,6 @@ import { UserRepository } from "@/users/infrastructure/repositories/User.reposit
 import { ConversationInterface } from "@/conversations/domain/interfaces/Conversation.interface";
 
 import { Request, Response } from "express";
-import { UpdateHumanOverrideStatusUseCase } from "@/conversations/application/UpdateHumanOverrideStatus.application";
 
 export class ConversationController {
   private readonly insertMessageUseCase: EnsureUserAndInsertMessageUseCase;
@@ -21,6 +22,7 @@ export class ConversationController {
   private readonly findConversationByUserIdUseCase: FindConversationByUserIdUseCase;
   private readonly findUserByPhoneUseCase: FindUserByPhoneUseCase;
   private readonly updateHumanOverrideStatusUseCase: UpdateHumanOverrideStatusUseCase;
+  private readonly updateTitleUseCase: UpdateTitleUseCase;
 
   constructor() {
     const userRepository = new UserRepository();
@@ -40,6 +42,7 @@ export class ConversationController {
     this.findUserByPhoneUseCase = new FindUserByPhoneUseCase(userRepository);
     this.updateHumanOverrideStatusUseCase =
       new UpdateHumanOverrideStatusUseCase(conversationRepository);
+    this.updateTitleUseCase = new UpdateTitleUseCase(conversationRepository);
   }
 
   async insertMessage(req: Request, res: Response): Promise<void> {
@@ -252,6 +255,60 @@ export class ConversationController {
           error: result.error ?? {
             code: "UNKNOWN_ERROR",
             message: "Failed to update human override status",
+          },
+        });
+        return;
+      }
+
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: {
+          code: "INTERNAL_ERROR",
+          message: (error as Error).message || "Unexpected error occurred",
+        },
+      });
+    }
+  }
+
+  async updateTitle(req: Request, res: Response): Promise<void> {
+    try {
+      const { conversationId } = req.params;
+
+      if (!conversationId) {
+        res.status(400).json({
+          success: false,
+          message: "conversationId is required",
+          error: {
+            code: "MISSING_PARAM",
+            message: "Missing 'conversationId' parameter in request",
+          },
+        });
+        return;
+      }
+
+      const { title } = req.body;
+
+      if (!title || typeof title !== "string") {
+        res.status(400).json({
+          success: false,
+          message: "title is required and must be a string.",
+          error: { code: "INVALID_CONTENT", message: "Missing title field" },
+        });
+        return;
+      }
+
+      const result = await this.updateTitleUseCase.execute(title, conversationId);
+
+      if (!result.success) {
+        res.status(500).json({
+          success: false,
+          message: result.message,
+          error: result.error ?? {
+            code: "UNKNOWN_ERROR",
+            message: "Failed to update title",
           },
         });
         return;

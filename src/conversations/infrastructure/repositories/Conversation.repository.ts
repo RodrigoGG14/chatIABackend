@@ -78,4 +78,17 @@ export class ConversationRepository implements ConversationRepositoryInterface {
       );
     }
   }
+
+  async updateTitle(title: string, conversationId: string): Promise<void> {
+    const { error } = await this.client
+      .from("conversations")
+      .update({ title })
+      .eq("id", conversationId);
+
+    if (error) {
+      throw new Error(
+        `Error updating title for conversation ${conversationId}: ${error.message}`
+      );
+    }
+  }
 }

@@ -18,5 +18,9 @@ ConversationRoutes.patch(
   "/conversations/:conversationId/human-override",
   controller.updateHumanOverrideStatus.bind(controller)
 );
+ConversationRoutes.put(
+  "/conversations/:conversationId",
+  controller.updateTitle.bind(controller)
+);
 
 export default ConversationRoutes;
