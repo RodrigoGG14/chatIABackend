@@ -31,6 +31,7 @@ export class MessageRepository implements MessageRepositoryInterface {
 
     return data;
   }
+
   async findMessagesByConversationId(
     conversationId: string
   ): Promise<FindMessagesByConversationIdResponseDTO[]> {
@@ -60,11 +61,16 @@ export class MessageRepository implements MessageRepositoryInterface {
       throw new Error(`Error fetching messages: ${error.message}`);
     }
 
-    // 🔹 Garantiza que siempre devuelva un array aunque no haya adjuntos
-    const messages = (data ?? []).map((msg: any) => ({
-      ...msg,
-      attachments: msg.message_attachments ?? [],
-    }));
+    const messages: FindMessagesByConversationIdResponseDTO[] = data.map(
+      (msg) => ({
+        id: msg.id,
+        conversation_id: msg.conversation_id,
+        content: msg.content,
+        sender: msg.sender, 
+        sent_at: msg.sent_at,
+        attachments: msg.message_attachments ?? [],
+      })
+    );
 
     return messages;
   }

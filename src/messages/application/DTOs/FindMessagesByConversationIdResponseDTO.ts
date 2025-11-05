@@ -1,10 +1,15 @@
-import { MessageAttachmentInterface } from "@/messageAttachments/domain/interfaces/MessageAttachment.interface";
-
 export interface FindMessagesByConversationIdResponseDTO {
   id: string;
   conversation_id: string;
   content: string | null;
-  sender: "user" | "ai" | "admin";
+  sender: string;
   sent_at: string;
-  attachments: MessageAttachmentInterface[];
+  attachments: {
+    id: string;
+    file_path: string;
+    mime_type: string;
+    category: string;
+    file_name: string;
+    created_at: string;
+  }[];
 }
