@@ -18,13 +18,24 @@ export class UploadAttachmentUseCase {
     private readonly attachmentRepository: MessageAttachmentRepositoryInterface
   ) {}
 
+  // Normaliza nombres de archivos para evitar errores en Supabase.
+  private sanitizeFileName(fileName: string): string {
+    return fileName
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "_")
+      .replace(/[^a-zA-Z0-9._-]/g, "");
+  }
+
   async execute(
     dto: UploadAttachmentDTO
   ): Promise<ApiResponse<MessageAttachmentInterface>> {
     try {
+      const sanitizedFileName = this.sanitizeFileName(dto.fileName);
+
       // 1️⃣ Subir archivo al bucket correcto (por categoría)
       const folder = `${dto.category}s`;
-      const storagePath = `${folder}/${Date.now()}_${dto.fileName}`;
+      const storagePath = `${folder}/${Date.now()}_${sanitizedFileName}`;
 
       const { data, error: uploadError } = await this.client.storage
         .from("user-media-assets")
