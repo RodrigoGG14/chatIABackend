@@ -1,6 +1,6 @@
+import { FindMessagesByConversationIdResponseDTO } from "@/messages/application/DTOs/FindMessagesByConversationIdResponseDTO";
 import { GetMessagesByConversationIdUseCase } from "@/messages/application/GetMessagesByConversationId.application";
 import { MessageRepository } from "@/messages/infrastructure/repositories/Message.repository";
-import { MessageInterface } from "@/messages/domain/interfaces/Message.interface";
 import { ApiResponse } from "@/shared/application/ApiResponse";
 
 import { Request, Response } from "express";
@@ -33,8 +33,9 @@ export class MessageController {
         return;
       }
 
-      const useCaseResult: ApiResponse<MessageInterface[]> =
-        await this.getMessagesByConversationIdUseCase.execute(conversationId);
+      const useCaseResult: ApiResponse<
+        FindMessagesByConversationIdResponseDTO[]
+      > = await this.getMessagesByConversationIdUseCase.execute(conversationId);
 
       if (!useCaseResult.success) {
         if (useCaseResult.data?.length === 0) {

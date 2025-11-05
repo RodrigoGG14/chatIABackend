@@ -1,5 +1,5 @@
+import { FindMessagesByConversationIdResponseDTO } from "@/messages/application/DTOs/FindMessagesByConversationIdResponseDTO";
 import { MessageRepositoryInterface } from "@/messages/domain/interfaces/MessageRepository.interface";
-import { MessageInterface } from "@/messages/domain/interfaces/Message.interface";
 import { ApiResponse } from "@/shared/application/ApiResponse";
 
 export class GetMessagesByConversationIdUseCase {
@@ -7,7 +7,7 @@ export class GetMessagesByConversationIdUseCase {
 
   async execute(
     conversationId: string
-  ): Promise<ApiResponse<MessageInterface[]>> {
+  ): Promise<ApiResponse<FindMessagesByConversationIdResponseDTO[]>> {
     const messages = await this.messageRepository.findMessagesByConversationId(
       conversationId
     );

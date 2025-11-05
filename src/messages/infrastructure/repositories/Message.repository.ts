@@ -1,3 +1,4 @@
+import { FindMessagesByConversationIdResponseDTO } from "@/messages/application/DTOs/FindMessagesByConversationIdResponseDTO";
 import { MessageRepositoryInterface } from "@/messages/domain/interfaces/MessageRepository.interface";
 import { MessageInsertInterface } from "@/messages/domain/interfaces/MessageInsert.interface";
 import { MessageInterface } from "@/messages/domain/interfaces/Message.interface";
@@ -30,21 +31,42 @@ export class MessageRepository implements MessageRepositoryInterface {
 
     return data;
   }
-
   async findMessagesByConversationId(
     conversationId: string
-  ): Promise<MessageInterface[]> {
+  ): Promise<FindMessagesByConversationIdResponseDTO[]> {
     const { data, error } = await this.client
       .from("messages")
-      .select("*")
+      .select(
+        `
+      id,
+      conversation_id,
+      content,
+      sender,
+      sent_at,
+      message_attachments (
+        id,
+        file_path,
+        mime_type,
+        category,
+        file_name,
+        created_at
+      )
+    `
+      )
       .eq("conversation_id", conversationId)
-      .order("sent_at", { ascending: true }); // mensajes del más viejo al más nuevo
+      .order("sent_at", { ascending: true });
 
     if (error) {
-      throw new Error(`Error fetching conversations: ${error.message}`);
+      throw new Error(`Error fetching messages: ${error.message}`);
     }
 
-    return data ?? [];
+    // 🔹 Garantiza que siempre devuelva un array aunque no haya adjuntos
+    const messages = (data ?? []).map((msg: any) => ({
+      ...msg,
+      attachments: msg.message_attachments ?? [],
+    }));
+
+    return messages;
   }
 
   async deleteById(messageId: string): Promise<void> {
