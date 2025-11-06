@@ -37,6 +37,7 @@ export class ConversationAssistanceRepository
       .from("conversation_assistances")
       .select("*")
       .eq("conversation_id", conversationId)
+      .eq("needs_human", true)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -48,5 +49,20 @@ export class ConversationAssistanceRepository
     }
 
     return data;
+  }
+
+  async resolveAssistance(id: string): Promise<boolean> {
+    const { data, error } = await this.client
+      .from("conversation_assistances")
+      .update({
+        needs_human: false,
+        resolved_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select("id")
+      .single();
+
+    if (error) throw new Error(error.message);
+    return !!data;
   }
 }

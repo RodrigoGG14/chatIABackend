@@ -8,4 +8,5 @@ export interface ConversationAssistancesRepositoryInterface {
   findAssistanceByConversationId(
     conversationId: string
   ): Promise<ConversationAssistances | null>;
+  resolveAssistance(id: string): Promise<boolean>;
 }
