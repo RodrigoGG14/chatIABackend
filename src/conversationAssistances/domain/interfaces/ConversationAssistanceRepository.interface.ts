@@ -5,4 +5,7 @@ export interface ConversationAssistancesRepositoryInterface {
   insertAssistancesForConversation(
     conversationId: InsertConversationAssistances
   ): Promise<ConversationAssistances>;
+  findAssistanceByConversationId(
+    conversationId: string
+  ): Promise<ConversationAssistances | null>;
 }

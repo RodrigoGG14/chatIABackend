@@ -11,5 +11,9 @@ ConversationAssistanceRoutes.post(
   (req, res, next) => verifyAuth.handle(req, res, next),
   (req, res) => controller.insertConversationAssistance(req, res)
 );
+// TODOD: agregar middleware de autenticación
+ConversationAssistanceRoutes.get("/assistances/:conversationId", (req, res) =>
+  controller.getConversationAssistanceByConversationId(req, res)
+);
 
 export default ConversationAssistanceRoutes;

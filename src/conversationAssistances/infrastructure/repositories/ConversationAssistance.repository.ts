@@ -29,4 +29,24 @@ export class ConversationAssistanceRepository
 
     return data;
   }
+
+  async findAssistanceByConversationId(
+    conversationId: string
+  ): Promise<ConversationAssistances | null> {
+    const { data, error } = await this.client
+      .from("conversation_assistances")
+      .select("*")
+      .eq("conversation_id", conversationId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(
+        `Error finding latest conversation assistance: ${error.message}`
+      );
+    }
+
+    return data;
+  }
 }

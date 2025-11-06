@@ -1,15 +1,22 @@
+import { FindConversationAssistanceByConversationIdUseCase } from "@/conversationAssistances/application/FindByConversationId.application";
+
 import { ConversationAssistanceRepository } from "@/conversationAssistances/infrastructure/repositories/ConversationAssistance.repository";
+
 import { InsertConversationAssistanceUseCase } from "@/conversationAssistances/application/InsertConversationAssistance.application";
 import { AuthenticatedRequestInterface } from "@/shared/domain/interfaces/AuthenticatedRequestInterface";
-import { Response } from "express";
+
+import { Request, Response } from "express";
 
 export class ConversationAssistanceController {
   private readonly insertConversationAssistanceUseCase: InsertConversationAssistanceUseCase;
+  private readonly findConversationAssistanceByConversationIdUseCase: FindConversationAssistanceByConversationIdUseCase;
 
   constructor() {
     const repository = new ConversationAssistanceRepository();
     this.insertConversationAssistanceUseCase =
       new InsertConversationAssistanceUseCase(repository);
+    this.findConversationAssistanceByConversationIdUseCase =
+      new FindConversationAssistanceByConversationIdUseCase(repository);
   }
 
   async insertConversationAssistance(
@@ -61,6 +68,43 @@ export class ConversationAssistanceController {
         error: {
           code: "SERVER_ERROR",
           message: err instanceof Error ? err.message : "Unknown error",
+        },
+      });
+    }
+  }
+
+  async getConversationAssistanceByConversationId(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    try {
+      const { conversationId } = req.params;
+
+      if (!conversationId) {
+        res.status(400).json({
+          success: false,
+          message: "Missing conversationId parameter",
+          error: {
+            code: "MISSING_CONVERSATION_ID",
+            message: "conversationId parameter is required",
+          },
+        });
+        return;
+      }
+
+      const result =
+        await this.findConversationAssistanceByConversationIdUseCase.execute(
+          conversationId
+        );
+
+      res.status(result.success ? 200 : 404).json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: {
+          code: "SERVER_ERROR",
+          message: error instanceof Error ? error.message : "Unknown error",
         },
       });
     }
