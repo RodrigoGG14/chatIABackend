@@ -222,6 +222,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_filtered_conversations: {
+        Args: {
+          p_from?: string
+          p_human_override?: boolean
+          p_min_messages?: number
+          p_text?: string
+          p_to?: string
+        }
+        Returns: {
+          human_override: boolean
+          id: string
+          latest_date: string
+          start_date: string
+          title: string
+          user_id: string
+        }[]
+      }
       insert_message_cascade: {
         Args: {
           p_content: string

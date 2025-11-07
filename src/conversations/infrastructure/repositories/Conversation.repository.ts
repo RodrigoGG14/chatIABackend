@@ -46,60 +46,49 @@ export class ConversationRepository implements ConversationRepositoryInterface {
     to?: Date;
     humanOverride?: boolean;
     minMessages?: number;
+    text?: string;
   }): Promise<ConversationInterface[]> {
-    let query = this.client
-      .from("conversations")
-      .select(
-        `
-        id,
-        title,
-        user_id,
-        human_override,
-        start_date,
-        latest_date,
-        messages:messages(count)
-      `
-      )
-      .order("latest_date", { ascending: false });
+    const { from, to, humanOverride, minMessages, text } = filters ?? {};
 
-    if (filters?.from && filters?.to) {
-      query = query
-        .gte("start_date", filters.from.toISOString())
-        .lte("latest_date", filters.to.toISOString());
-    }
+    const rpcParams: {
+      p_from?: string;
+      p_to?: string;
+      p_human_override?: boolean;
+      p_min_messages?: number;
+      p_text?: string;
+    } = {};
 
-    if (typeof filters?.humanOverride === "boolean") {
-      query = query.eq("human_override", filters.humanOverride);
-    }
+    if (from) rpcParams.p_from = from.toISOString();
+    if (to) rpcParams.p_to = to.toISOString();
+    if (humanOverride !== undefined) rpcParams.p_human_override = humanOverride;
+    if (minMessages !== undefined) rpcParams.p_min_messages = minMessages;
+    if (text) rpcParams.p_text = text;
 
-    // Contar solo mensajes donde sender = 'user'
-    query = query.eq("messages.sender", "user");
-
-    const { data, error } = await query;
+    const { data, error } = await this.client.rpc(
+      "get_filtered_conversations",
+      rpcParams
+    );
 
     if (error) {
-      throw new Error(`Error fetching conversations: ${error.message}`);
+      throw new Error(
+        `Error fetching filtered conversations: ${error.message}`
+      );
     }
 
     if (!data) {
       return [];
     }
 
-    let filtered = data;
-
-    if (typeof filters?.minMessages === "number") {
-      const min = filters.minMessages;
-      filtered = data.filter((c) => (c.messages?.[0]?.count ?? 0) >= min);
-    }
-
-    return filtered.map((c) => ({
-      id: c.id,
-      title: c.title,
-      user_id: c.user_id,
-      human_override: c.human_override,
-      start_date: c.start_date,
-      latest_date: c.latest_date,
+    const conversations: ConversationInterface[] = data.map((row) => ({
+      id: String(row.id),
+      title: String(row.title ?? ""),
+      user_id: String(row.user_id),
+      human_override: Boolean(row.human_override),
+      start_date: String(row.start_date),
+      latest_date: String(row.latest_date),
     }));
+
+    return conversations;
   }
 
   async findByPhone(phone: string): Promise<ConversationInterface | null> {

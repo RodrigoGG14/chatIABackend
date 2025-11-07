@@ -14,6 +14,7 @@ export class GetConversationsUseCase {
     to?: Date;
     humanOverride?: boolean;
     minMessages?: number;
+    text?: string;
   }): Promise<ApiResponse<GetConversationsResponseDTO[]>> {
     try {
       const conversations = await this.conversationRepository.getConversations(

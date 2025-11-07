@@ -144,13 +144,14 @@ export class ConversationController {
 
   async getConversations(req: Request, res: Response): Promise<void> {
     try {
-      const { from, to, human_override, minMessages } = req.query;
+      const { from, to, human_override, minMessages, text } = req.query;
 
       const filters: {
         from?: Date;
         to?: Date;
         humanOverride?: boolean;
         minMessages?: number;
+        text?: string;
       } = {};
 
       if (from) filters.from = new Date(from as string);
@@ -159,6 +160,8 @@ export class ConversationController {
         filters.humanOverride = human_override === "true";
       if (minMessages && !isNaN(Number(minMessages)))
         filters.minMessages = Number(minMessages);
+      if (typeof text === "string" && text.trim().length > 0)
+        filters.text = text.trim();
 
       const useCaseResult: ApiResponse<ConversationInterface[]> =
         await this.getConversationsUseCase.execute(filters);
