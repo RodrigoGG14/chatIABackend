@@ -7,7 +7,12 @@ export interface ConversationRepositoryInterface {
   insertConversation(
     conversation: ConversationInsertInterface
   ): Promise<ConversationInterface>;
-  getConversations(): Promise<ConversationInterface[]>;
+  getConversations(filters?: {
+    from?: Date;
+    to?: Date;
+    humanOverride?: boolean;
+    minMessages?: number;
+  }): Promise<ConversationInterface[]>;
   findByPhone(phone: string): Promise<ConversationInterface | null>;
   updateHumanOverrideStatus(
     value: boolean,

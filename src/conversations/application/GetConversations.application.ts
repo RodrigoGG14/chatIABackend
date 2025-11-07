@@ -9,10 +9,16 @@ export class GetConversationsUseCase {
     private readonly userRepository: UserRepositoryInterface
   ) {}
 
-  async execute(): Promise<ApiResponse<GetConversationsResponseDTO[]>> {
+  async execute(filters?: {
+    from?: Date;
+    to?: Date;
+    humanOverride?: boolean;
+    minMessages?: number;
+  }): Promise<ApiResponse<GetConversationsResponseDTO[]>> {
     try {
-      const conversations =
-        await this.conversationRepository.getConversations();
+      const conversations = await this.conversationRepository.getConversations(
+        filters
+      );
 
       if (conversations.length === 0) {
         return {

@@ -144,22 +144,29 @@ export class ConversationController {
 
   async getConversations(req: Request, res: Response): Promise<void> {
     try {
-      const useCaseResult: ApiResponse<ConversationInterface[]> =
-        await this.getConversationsUseCase.execute();
-      if (!useCaseResult.success) {
-        if (useCaseResult.data?.length === 0) {
-          res.status(404).json(useCaseResult);
-          return;
-        }
+      const { from, to, human_override, minMessages } = req.query;
 
-        res.status(400).json({
-          success: false,
-          message: useCaseResult.message,
-          error: useCaseResult.error ?? {
-            code: "BAD_REQUEST",
-            message: "Invalid request",
-          },
-        });
+      const filters: {
+        from?: Date;
+        to?: Date;
+        humanOverride?: boolean;
+        minMessages?: number;
+      } = {};
+
+      if (from) filters.from = new Date(from as string);
+      if (to) filters.to = new Date(to as string);
+      if (typeof human_override === "string")
+        filters.humanOverride = human_override === "true";
+      if (minMessages && !isNaN(Number(minMessages)))
+        filters.minMessages = Number(minMessages);
+
+      const useCaseResult: ApiResponse<ConversationInterface[]> =
+        await this.getConversationsUseCase.execute(filters);
+
+      if (!useCaseResult.success) {
+        res
+          .status(useCaseResult.data?.length === 0 ? 404 : 400)
+          .json(useCaseResult);
         return;
       }
 

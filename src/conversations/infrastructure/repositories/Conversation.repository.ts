@@ -41,13 +41,65 @@ export class ConversationRepository implements ConversationRepositoryInterface {
     return data;
   }
 
-  async getConversations(): Promise<ConversationInterface[]> {
-    const { data, error } = await this.client.from("conversations").select("*");
+  async getConversations(filters?: {
+    from?: Date;
+    to?: Date;
+    humanOverride?: boolean;
+    minMessages?: number;
+  }): Promise<ConversationInterface[]> {
+    let query = this.client
+      .from("conversations")
+      .select(
+        `
+        id,
+        title,
+        user_id,
+        human_override,
+        start_date,
+        latest_date,
+        messages:messages(count)
+      `
+      )
+      .order("latest_date", { ascending: false });
+
+    if (filters?.from && filters?.to) {
+      query = query
+        .gte("start_date", filters.from.toISOString())
+        .lte("latest_date", filters.to.toISOString());
+    }
+
+    if (typeof filters?.humanOverride === "boolean") {
+      query = query.eq("human_override", filters.humanOverride);
+    }
+
+    // Contar solo mensajes donde sender = 'user'
+    query = query.eq("messages.sender", "user");
+
+    const { data, error } = await query;
+
     if (error) {
       throw new Error(`Error fetching conversations: ${error.message}`);
     }
 
-    return data ?? [];
+    if (!data) {
+      return [];
+    }
+
+    let filtered = data;
+
+    if (typeof filters?.minMessages === "number") {
+      const min = filters.minMessages;
+      filtered = data.filter((c) => (c.messages?.[0]?.count ?? 0) >= min);
+    }
+
+    return filtered.map((c) => ({
+      id: c.id,
+      title: c.title,
+      user_id: c.user_id,
+      human_override: c.human_override,
+      start_date: c.start_date,
+      latest_date: c.latest_date,
+    }));
   }
 
   async findByPhone(phone: string): Promise<ConversationInterface | null> {
