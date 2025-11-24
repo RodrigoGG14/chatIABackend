@@ -1,7 +1,10 @@
 import { ConversationRepositoryInterface } from "@/conversations/domain/interfaces/ConversationRepository.interface";
 import { InsertMessageCascadeResult } from "@/conversations/domain/interfaces/InsertMessageCascadeResult.interface";
 import { ConversationInsertInterface } from "@/conversations/domain/interfaces/ConversationInsert.interfaces";
-import { ConversationInterface } from "@/conversations/domain/interfaces/Conversation.interface";
+import {
+  ConversationInterface,
+  ConversaionCategory,
+} from "@/conversations/domain/interfaces/Conversation.interface";
 import { SupabaseService } from "@/shared/infrastructure/supabase/SupabaseClient";
 
 export class ConversationRepository implements ConversationRepositoryInterface {
@@ -14,7 +17,9 @@ export class ConversationRepository implements ConversationRepositoryInterface {
   async findByUserId(user_id: string): Promise<ConversationInterface | null> {
     const { data, error } = await this.client
       .from("conversations")
-      .select("*")
+      .select(
+        "id, user_id, title, start_date, latest_date, human_override, category, alerts"
+      )
       .eq("user_id", user_id)
       .maybeSingle();
 
@@ -22,7 +27,20 @@ export class ConversationRepository implements ConversationRepositoryInterface {
       throw new Error(`Error fetching conversation: ${error.message}`);
     }
 
-    return data;
+    if (!data) return null;
+
+    const conv: ConversationInterface = {
+      id: String(data.id),
+      user_id: String(data.user_id),
+      title: String(data.title ?? ""),
+      start_date: String(data.start_date),
+      latest_date: String(data.latest_date),
+      human_override: Boolean(data.human_override),
+      category: (data.category as ConversaionCategory) ?? null,
+      alerts: Boolean(data.alerts),
+    };
+
+    return conv;
   }
 
   async insertConversation(
@@ -31,14 +49,27 @@ export class ConversationRepository implements ConversationRepositoryInterface {
     const { data, error } = await this.client
       .from("conversations")
       .insert(conversation)
-      .select()
+      .select(
+        "id, user_id, title, start_date, latest_date, human_override, category, alerts"
+      )
       .single();
 
     if (error) {
       throw new Error(error.message);
     }
 
-    return data;
+    const conv: ConversationInterface = {
+      id: String(data.id),
+      user_id: String(data.user_id),
+      title: String(data.title ?? ""),
+      start_date: String(data.start_date),
+      latest_date: String(data.latest_date),
+      human_override: Boolean(data.human_override),
+      category: (data.category as ConversaionCategory) ?? null,
+      alerts: Boolean(data.alerts),
+    };
+
+    return conv;
   }
 
   async getConversations(filters?: {
@@ -79,14 +110,18 @@ export class ConversationRepository implements ConversationRepositoryInterface {
       return [];
     }
 
-    const conversations: ConversationInterface[] = data.map((row) => ({
-      id: String(row.id),
-      title: String(row.title ?? ""),
-      user_id: String(row.user_id),
-      human_override: Boolean(row.human_override),
-      start_date: String(row.start_date),
-      latest_date: String(row.latest_date),
-    }));
+    const conversations: ConversationInterface[] = (data as any[]).map(
+      (row) => ({
+        id: String(row.id),
+        title: String(row.title ?? ""),
+        user_id: String(row.user_id),
+        human_override: Boolean(row.human_override),
+        start_date: String(row.start_date),
+        latest_date: String(row.latest_date),
+        category: (row.category as ConversaionCategory) ?? null,
+        alerts: Boolean(row.alerts),
+      })
+    );
 
     return conversations;
   }
@@ -94,7 +129,9 @@ export class ConversationRepository implements ConversationRepositoryInterface {
   async findByPhone(phone: string): Promise<ConversationInterface | null> {
     const { data, error } = await this.client
       .from("conversations")
-      .select("*")
+      .select(
+        "id, user_id, title, start_date, latest_date, human_override, category, alerts"
+      )
       .eq("phone", phone)
       .maybeSingle();
 
@@ -102,7 +139,20 @@ export class ConversationRepository implements ConversationRepositoryInterface {
       throw new Error(`Error fetching conversation: ${error.message}`);
     }
 
-    return data;
+    if (!data) return null;
+
+    const conv: ConversationInterface = {
+      id: String(data.id),
+      user_id: String(data.user_id),
+      title: String(data.title ?? ""),
+      start_date: String(data.start_date),
+      latest_date: String(data.latest_date),
+      human_override: Boolean(data.human_override),
+      category: (data.category as ConversaionCategory) ?? null,
+      alerts: Boolean(data.alerts),
+    };
+
+    return conv;
   }
 
   async updateHumanOverrideStatus(
@@ -153,7 +203,23 @@ export class ConversationRepository implements ConversationRepositoryInterface {
       throw new Error(`Error in insert_message_cascade: ${error.message}`);
     if (!data) throw new Error("insert_message_cascade returned no data");
 
-    // data ya debe contener { message_id, conversation_id, user_id }
     return data as InsertMessageCascadeResult;
+  }
+
+  async updateCategoryAndAlerts(
+    conversationId: string,
+    category: ConversaionCategory | null,
+    alerts: boolean
+  ): Promise<void> {
+    const { error } = await this.client
+      .from("conversations")
+      .update({ category, alerts })
+      .eq("id", conversationId);
+
+    if (error) {
+      throw new Error(
+        `Error updating category/alerts for conversation ${conversationId}: ${error.message}`
+      );
+    }
   }
 }

@@ -6,4 +6,6 @@ export interface GetConversationsResponseDTO {
   human_override: boolean;
   start_date: string;
   latest_date: string;
+  category: string | null;
+  alerts: boolean;
 }

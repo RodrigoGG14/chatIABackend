@@ -1,5 +1,8 @@
 import { ConversationInsertInterface } from "@/conversations/domain/interfaces/ConversationInsert.interfaces";
-import { ConversationInterface } from "@/conversations/domain/interfaces/Conversation.interface";
+import {
+  ConversaionCategory,
+  ConversationInterface,
+} from "@/conversations/domain/interfaces/Conversation.interface";
 import { InsertMessageCascadeResult } from "./InsertMessageCascadeResult.interface";
 
 export interface ConversationRepositoryInterface {
@@ -25,4 +28,9 @@ export interface ConversationRepositoryInterface {
     content: string;
     sender: "user";
   }): Promise<InsertMessageCascadeResult>;
+  updateCategoryAndAlerts(
+    conversationId: string,
+    category: ConversaionCategory | null,
+    alerts: boolean
+  ): Promise<void>;
 }

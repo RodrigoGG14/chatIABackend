@@ -45,4 +45,9 @@ ConversationRoutes.put(
   controller.updateTitle.bind(controller)
 );
 
+ConversationRoutes.patch(
+  "/conversations/:conversationId/category",
+  controller.updateCategoryCards.bind(controller)
+);
+
 export default ConversationRoutes;

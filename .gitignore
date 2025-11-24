@@ -32,3 +32,7 @@ pnpm-debug.log*
 # 🚫 Frontend específico (si no aplica)
 .next/
 .svelte-kit/
+
+# Docker
+dockerfile
+.dockerignore
