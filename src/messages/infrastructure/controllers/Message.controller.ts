@@ -1,9 +1,9 @@
-import { FindMessagesByConversationIdResponseDTO } from "@/messages/application/DTOs/FindMessagesByConversationIdResponseDTO";
-import { GetMessagesByConversationIdUseCase } from "@/messages/application/GetMessagesByConversationId.application";
-import { MessageRepository } from "@/messages/infrastructure/repositories/Message.repository";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { ApiResponse } from "../../../shared/application/ApiResponse";
 
 import { Request, Response } from "express";
+import { MessageRepository } from "../repositories/Message.repository";
+import { GetMessagesByConversationIdUseCase } from "../../../messages/application/GetMessagesByConversationId.application";
+import { FindMessagesByConversationIdResponseDTO } from "../../../messages/application/DTOs/FindMessagesByConversationIdResponseDTO";
 
 export class MessageController {
   private readonly getMessagesByConversationIdUseCase: GetMessagesByConversationIdUseCase;

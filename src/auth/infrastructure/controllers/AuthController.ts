@@ -1,6 +1,6 @@
-import { LoginUseCase } from "@/auth/application/LoginUseCase";
 import { Request, Response } from "express";
 import * as cookie from "cookie";
+import { LoginUseCase } from "../../application/LoginUseCase";
 
 export class AuthController {
   constructor(private readonly loginUseCase: LoginUseCase) {}

@@ -1,6 +1,7 @@
-import { AuthRepositoryInterface } from "@/auth/domain/interfaces/AuthRepository.interface";
-import { LoginRequestDTO } from "@/auth/application/DTOs/LoginRequestDTO";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+
+import { ApiResponse } from "../../shared/application/ApiResponse";
+import { AuthRepositoryInterface } from "../domain/interfaces/AuthRepository.interface";
+import { LoginRequestDTO } from "./DTOs/LoginRequestDTO";
 
 export class LoginUseCase {
   constructor(private readonly authRepository: AuthRepositoryInterface) {}

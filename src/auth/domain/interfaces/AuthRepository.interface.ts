@@ -1,4 +1,5 @@
-import { LoginRequestDTO } from "@/auth/application/DTOs/LoginRequestDTO";
+import { LoginRequestDTO } from "../../application/DTOs/LoginRequestDTO";
+
 
 export interface AuthRepositoryInterface {
   login(credentials: LoginRequestDTO): Promise<{

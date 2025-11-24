@@ -1,7 +1,8 @@
-import { MessageAttachmentRepositoryInterface } from "@/messageAttachments/domain/interfaces/MessageAttachmentRepository.interface";
-import { MessageAttachmentInsertInterface } from "@/messageAttachments/domain/interfaces/MessageAttachmentInsert.interface";
-import { MessageAttachmentInterface } from "@/messageAttachments/domain/interfaces/MessageAttachment.interface";
-import { SupabaseService } from "@/shared/infrastructure/supabase/SupabaseClient";
+import { MessageAttachmentRepositoryInterface } from "../../../messageAttachments/domain/interfaces/MessageAttachmentRepository.interface";
+import { MessageAttachmentInsertInterface } from "../../../messageAttachments/domain/interfaces/MessageAttachmentInsert.interface";
+import { MessageAttachmentInterface } from "../../../messageAttachments/domain/interfaces/MessageAttachment.interface";
+import { SupabaseService } from "../../../shared/infrastructure/supabase/SupabaseClient";
+
 
 export class MessageAttachmentRepository
   implements MessageAttachmentRepositoryInterface

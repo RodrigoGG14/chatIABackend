@@ -1,5 +1,5 @@
-import { InsertConversationAssistances } from "@/conversationAssistances/domain/interfaces/InsertConversationAssistance.interface";
-import { ConversationAssistances } from "@/conversationAssistances/domain/interfaces/ConversationAssistance.interface";
+import { ConversationAssistances } from "./ConversationAssistance.interface";
+import { InsertConversationAssistances } from "./InsertConversationAssistance.interface";
 
 export interface ConversationAssistancesRepositoryInterface {
   insertAssistancesForConversation(

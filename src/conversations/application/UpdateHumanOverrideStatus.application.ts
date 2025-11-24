@@ -1,6 +1,8 @@
-import { ConversationAssistancesRepositoryInterface } from "@/conversationAssistances/domain/interfaces/ConversationAssistanceRepository.interface";
-import { ConversationRepositoryInterface } from "@/conversations/domain/interfaces/ConversationRepository.interface";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { ConversationAssistancesRepositoryInterface } from "../../conversationAssistances/domain/interfaces/ConversationAssistanceRepository.interface";
+import { ConversationRepositoryInterface } from "../domain/interfaces/ConversationRepository.interface";
+import { ApiResponse } from "../../shared/application/ApiResponse";
+
+
 
 export class UpdateHumanOverrideStatusUseCase {
   constructor(

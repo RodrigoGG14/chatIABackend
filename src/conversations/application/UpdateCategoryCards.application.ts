@@ -1,6 +1,6 @@
-import { ConversationRepositoryInterface } from "@/conversations/domain/interfaces/ConversationRepository.interface";
-import { ConversaionCategory } from "@/conversations/domain/interfaces/Conversation.interface";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { ApiResponse } from "../../shared/application/ApiResponse";
+import { ConversaionCategory } from "../domain/interfaces/Conversation.interface";
+import { ConversationRepositoryInterface } from "../domain/interfaces/ConversationRepository.interface";
 
 export class UpdateCategoryCardsUseCase {
   constructor(
