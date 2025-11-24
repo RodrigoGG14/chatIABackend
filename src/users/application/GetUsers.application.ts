@@ -1,6 +1,6 @@
-import { UserRepositoryInterface } from "@/users/domain/interfaces/UserRepository.interface";
-import { UserInterface } from "@/users/domain/interfaces/User.interface";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { UserRepositoryInterface } from "../../users/domain/interfaces/UserRepository.interface";
+import { UserInterface } from "../../users/domain/interfaces/User.interface";
+import { ApiResponse } from "../../shared/application/ApiResponse";
 
 export class GetUsersUseCase {
   constructor(private readonly userRepository: UserRepositoryInterface) {}

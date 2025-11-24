@@ -1,9 +1,9 @@
-import { FindMessagesByConversationIdResponseDTO } from "@/messages/application/DTOs/FindMessagesByConversationIdResponseDTO";
-import { MessageRepositoryInterface } from "@/messages/domain/interfaces/MessageRepository.interface";
-import { MessageInsertInterface } from "@/messages/domain/interfaces/MessageInsert.interface";
-import { MessageInterface } from "@/messages/domain/interfaces/Message.interface";
+import { FindMessagesByConversationIdResponseDTO } from "../../../messages/application/DTOs/FindMessagesByConversationIdResponseDTO";
+import { MessageRepositoryInterface } from "../../../messages/domain/interfaces/MessageRepository.interface";
+import { MessageInsertInterface } from "../../../messages/domain/interfaces/MessageInsert.interface";
+import { MessageInterface } from "../../../messages/domain/interfaces/Message.interface";
 
-import { SupabaseService } from "@/shared/infrastructure/supabase/SupabaseClient";
+import { SupabaseService } from "../../../shared/infrastructure/supabase/SupabaseClient";
 
 export class MessageRepository implements MessageRepositoryInterface {
   private readonly client = new SupabaseService().getClient();

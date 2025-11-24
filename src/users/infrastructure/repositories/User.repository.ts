@@ -1,8 +1,8 @@
-import { UserRepositoryInterface } from "@/users/domain/interfaces/UserRepository.interface";
-import { UserInsertInterface } from "@/users/domain/interfaces/UserInsert.interface";
-import { UserInterface } from "@/users/domain/interfaces/User.interface";
+import { UserRepositoryInterface } from "../../../users/domain/interfaces/UserRepository.interface";
+import { UserInsertInterface } from "../../../users/domain/interfaces/UserInsert.interface";
+import { UserInterface } from "../../../users/domain/interfaces/User.interface";
 
-import { SupabaseService } from "@/shared/infrastructure/supabase/SupabaseClient";
+import { SupabaseService } from "../../../shared/infrastructure/supabase/SupabaseClient";
 
 export class UserRepository implements UserRepositoryInterface {
   private readonly client = new SupabaseService().getClient();

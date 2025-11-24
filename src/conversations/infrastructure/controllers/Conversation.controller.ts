@@ -1,27 +1,27 @@
-import { EnsureUserAndInsertMessageUseCase } from "@/conversations/application/EnsureUserAndInsertMessage.application";
-import { UpdateHumanOverrideStatusUseCase } from "@/conversations/application/UpdateHumanOverrideStatus.application";
-import { FindConversationByUserIdUseCase } from "@/conversations/application/FindConversationByUserId.application";
-import { GetConversationsUseCase } from "@/conversations/application/GetConversations.application";
-import { ConversationAssistanceRepository } from "@/conversationAssistances/infrastructure/repositories/ConversationAssistance.repository";
-import { UpdateTitleUseCase } from "@/conversations/application/UpdateTitle.application";
-import { FindUserByPhoneUseCase } from "@/users/application/FindByPhone.application";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { EnsureUserAndInsertMessageUseCase } from "../../../conversations/application/EnsureUserAndInsertMessage.application";
+import { UpdateHumanOverrideStatusUseCase } from "../../../conversations/application/UpdateHumanOverrideStatus.application";
+import { FindConversationByUserIdUseCase } from "../../../conversations/application/FindConversationByUserId.application";
+import { GetConversationsUseCase } from "../../../conversations/application/GetConversations.application";
+import { ConversationAssistanceRepository } from "../../../conversationAssistances/infrastructure/repositories/ConversationAssistance.repository";
+import { UpdateTitleUseCase } from "../../../conversations/application/UpdateTitle.application";
+import { FindUserByPhoneUseCase } from "../../../users/application/FindByPhone.application";
+import { ApiResponse } from "../../../shared/application/ApiResponse";
 
-import { ConversationRepository } from "@/conversations/infrastructure/repositories/Conversation.repository";
-import { MessageRepository } from "@/messages/infrastructure/repositories/Message.repository";
-import { UserRepository } from "@/users/infrastructure/repositories/User.repository";
+import { ConversationRepository } from "../../../conversations/infrastructure/repositories/Conversation.repository";
+import { MessageRepository } from "../../../messages/infrastructure/repositories/Message.repository";
+import { UserRepository } from "../../../users/infrastructure/repositories/User.repository";
 
-import { InsertMessageWithUserDTO } from "@/conversations/application/DTOs/InsertMessageWithUserDTO";
+import { InsertMessageWithUserDTO } from "../../../conversations/application/DTOs/InsertMessageWithUserDTO";
 
-import { UpdateCategoryCardsUseCase } from "@/conversations/application/UpdateCategoryCards.application";
+import { UpdateCategoryCardsUseCase } from "../../../conversations/application/UpdateCategoryCards.application";
 
 import {
   ConversationInterface,
   ConversaionCategory,
-} from "@/conversations/domain/interfaces/Conversation.interface";
+} from "../../../conversations/domain/interfaces/Conversation.interface";
 
 import { Request, Response } from "express";
-import { GetConversationsResponseDTO } from "@/conversations/application/DTOs/GetConversationsResponseDTO";
+import { GetConversationsResponseDTO } from "../../../conversations/application/DTOs/GetConversationsResponseDTO";
 
 export class ConversationController {
   private readonly insertMessageUseCase: EnsureUserAndInsertMessageUseCase;

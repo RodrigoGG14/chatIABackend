@@ -1,8 +1,7 @@
-import { MessageRepositoryInterface } from "@/messages/domain/interfaces/MessageRepository.interface";
-import { MessageInsertInterface } from "@/messages/domain/interfaces/MessageInsert.interface";
-import { MessageInterface } from "@/messages/domain/interfaces/Message.interface";
-
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { ApiResponse } from "../../shared/application/ApiResponse";
+import { MessageInterface } from "../domain/interfaces/Message.interface";
+import { MessageInsertInterface } from "../domain/interfaces/MessageInsert.interface";
+import { MessageRepositoryInterface } from "../domain/interfaces/MessageRepository.interface";
 
 export class InsertMessageUseCase {
   constructor(private readonly messageRepository: MessageRepositoryInterface) {}

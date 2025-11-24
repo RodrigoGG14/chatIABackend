@@ -1,5 +1,5 @@
-import { ConversationRepositoryInterface } from "@/conversations/domain/interfaces/ConversationRepository.interface";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { ApiResponse } from "../../shared/application/ApiResponse";
+import { ConversationRepositoryInterface } from "../domain/interfaces/ConversationRepository.interface";
 
 export class UpdateTitleUseCase {
   constructor(

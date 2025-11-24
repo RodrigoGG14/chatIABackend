@@ -1,6 +1,6 @@
-import { FindMessagesByConversationIdResponseDTO } from "@/messages/application/DTOs/FindMessagesByConversationIdResponseDTO";
-import { MessageInsertInterface } from "@/messages/domain/interfaces/MessageInsert.interface";
-import { MessageInterface } from "@/messages/domain/interfaces/Message.interface";
+import { FindMessagesByConversationIdResponseDTO } from "../../../messages/application/DTOs/FindMessagesByConversationIdResponseDTO";
+import { MessageInterface } from "./Message.interface";
+import { MessageInsertInterface } from "./MessageInsert.interface";
 
 export interface MessageRepositoryInterface {
   insertMessage(message: MessageInsertInterface): Promise<MessageInterface>;

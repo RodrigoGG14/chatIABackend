@@ -1,7 +1,8 @@
-import { MessageAttachmentRepositoryInterface } from "@/messageAttachments/domain/interfaces/MessageAttachmentRepository.interface";
-import { MessageAttachmentInterface } from "@/messageAttachments/domain/interfaces/MessageAttachment.interface";
-import { SupabaseService } from "@/shared/infrastructure/supabase/SupabaseClient";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { SupabaseService } from "../../shared/infrastructure/supabase/SupabaseClient";
+import { MessageAttachmentInterface } from "../domain/interfaces/MessageAttachment.interface";
+import { MessageAttachmentRepositoryInterface } from "../domain/interfaces/MessageAttachmentRepository.interface";
+import { ApiResponse } from "../../shared/application/ApiResponse";
+
 
 interface UploadAttachmentDTO {
   messageId: string;

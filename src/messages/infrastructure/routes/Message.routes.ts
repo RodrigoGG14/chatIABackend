@@ -1,4 +1,4 @@
-import { MessageController } from "@/messages/infrastructure/controllers/Message.controller";
+import { MessageController } from "../../../messages/infrastructure/controllers/Message.controller";
 import { Router } from "express";
 
 const MessageRoutes: Router = Router();

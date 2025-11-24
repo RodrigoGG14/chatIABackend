@@ -1,11 +1,11 @@
-import { ConversationRepositoryInterface } from "@/conversations/domain/interfaces/ConversationRepository.interface";
-import { InsertMessageCascadeResult } from "@/conversations/domain/interfaces/InsertMessageCascadeResult.interface";
-import { ConversationInsertInterface } from "@/conversations/domain/interfaces/ConversationInsert.interfaces";
+import { ConversationRepositoryInterface } from "../../../conversations/domain/interfaces/ConversationRepository.interface";
+import { InsertMessageCascadeResult } from "../../../conversations/domain/interfaces/InsertMessageCascadeResult.interface";
+import { ConversationInsertInterface } from "../../../conversations/domain/interfaces/ConversationInsert.interfaces";
 import {
   ConversationInterface,
   ConversaionCategory,
-} from "@/conversations/domain/interfaces/Conversation.interface";
-import { SupabaseService } from "@/shared/infrastructure/supabase/SupabaseClient";
+} from "../../../conversations/domain/interfaces/Conversation.interface";
+import { SupabaseService } from "../../../shared/infrastructure/supabase/SupabaseClient";
 
 export class ConversationRepository implements ConversationRepositoryInterface {
   private readonly client = new SupabaseService().getClient();

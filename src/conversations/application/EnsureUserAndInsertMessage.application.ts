@@ -1,20 +1,21 @@
-import { MessageAttachmentRepository } from "@/messageAttachments/infrastructure/repositories/MessageAttachment.repository";
-import { ConversationRepositoryInterface } from "@/conversations/domain/interfaces/ConversationRepository.interface";
-import { UploadAttachmentUseCase } from "@/messageAttachments/application/UploadAttachment.application";
-import { MessageRepositoryInterface } from "@/messages/domain/interfaces/MessageRepository.interface";
-import { UserRepositoryInterface } from "@/users/domain/interfaces/UserRepository.interface";
+import { ConversationRepositoryInterface } from "../domain/interfaces/ConversationRepository.interface";
+import { FindConversationByUserIdUseCase } from "./FindConversationByUserId.application";
+import { InsertConversationUseCase } from "./InsertConversation.application";
 
-import { InsertMessageWithUserResponseDTO } from "@/conversations/application/DTOs/InsertMessageWithUserResponseDTO";
-import { InsertMessageWithUserDTO } from "@/conversations/application/DTOs/InsertMessageWithUserDTO";
+import { MessageAttachmentRepository } from "../../messageAttachments/infrastructure/repositories/MessageAttachment.repository";
+import { UploadAttachmentUseCase } from "../../messageAttachments/application/UploadAttachment.application";
+import { MessageRepositoryInterface } from "../../messages/domain/interfaces/MessageRepository.interface";
+import { UserRepositoryInterface } from "../../users/domain/interfaces/UserRepository.interface";
 
-import { FindConversationByUserIdUseCase } from "@/conversations/application/FindConversationByUserId.application";
-import { InsertConversationUseCase } from "@/conversations/application/InsertConversation.application";
-import { InsertMessageUseCase } from "@/messages/application/InsertMessage.application";
-import { InsertUserUseCase } from "@/users/application/InsertUser.application";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { InsertMessageWithUserResponseDTO } from "./../../conversations/application/DTOs/InsertMessageWithUserResponseDTO";
+import { InsertMessageWithUserDTO } from "../../conversations/application/DTOs/InsertMessageWithUserDTO";
 
-import { ConversationInterface } from "@/conversations/domain/interfaces/Conversation.interface";
-import { UserInterface } from "@/users/domain/interfaces/User.interface";
+import { InsertMessageUseCase } from "../../messages/application/InsertMessage.application";
+import { InsertUserUseCase } from "../../users/application/InsertUser.application";
+import { ApiResponse } from "../../shared/application/ApiResponse";
+
+import { ConversationInterface } from "../../conversations/domain/interfaces/Conversation.interface";
+import { UserInterface } from "../../users/domain/interfaces/User.interface";
 
 export class EnsureUserAndInsertMessageUseCase {
   private readonly insertUserUseCase: InsertUserUseCase;
