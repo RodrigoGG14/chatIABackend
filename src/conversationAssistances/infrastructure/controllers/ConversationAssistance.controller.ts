@@ -1,10 +1,10 @@
-import { FindConversationAssistanceByConversationIdUseCase } from "@/conversationAssistances/application/FindByConversationId.application";
+import { FindConversationAssistanceByConversationIdUseCase } from "../../../conversationAssistances/application/FindByConversationId.application";
 
-import { ConversationAssistanceRepository } from "@/conversationAssistances/infrastructure/repositories/ConversationAssistance.repository";
+import { ConversationAssistanceRepository } from "../../../conversationAssistances/infrastructure/repositories/ConversationAssistance.repository";
 
-import { ResolveConversationAssistanceUseCase } from "@/conversationAssistances/application/ResolveConversationAssistance.application";
-import { InsertConversationAssistanceUseCase } from "@/conversationAssistances/application/InsertConversationAssistance.application";
-import { AuthenticatedRequestInterface } from "@/shared/domain/interfaces/AuthenticatedRequestInterface";
+import { ResolveConversationAssistanceUseCase } from "../../../conversationAssistances/application/ResolveConversationAssistance.application";
+import { InsertConversationAssistanceUseCase } from "../../../conversationAssistances/application/InsertConversationAssistance.application";
+import { AuthenticatedRequestInterface } from "../../../shared/domain/interfaces/AuthenticatedRequestInterface";
 
 import { Request, Response } from "express";
 

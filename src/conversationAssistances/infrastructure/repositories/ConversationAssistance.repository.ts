@@ -1,7 +1,7 @@
-import { ConversationAssistancesRepositoryInterface } from "@/conversationAssistances/domain/interfaces/ConversationAssistanceRepository.interface";
-import { InsertConversationAssistances } from "@/conversationAssistances/domain/interfaces/InsertConversationAssistance.interface";
-import { ConversationAssistances } from "@/conversationAssistances/domain/interfaces/ConversationAssistance.interface";
-import { SupabaseService } from "@/shared/infrastructure/supabase/SupabaseClient";
+import { ConversationAssistancesRepositoryInterface } from "../../../conversationAssistances/domain/interfaces/ConversationAssistanceRepository.interface";
+import { InsertConversationAssistances } from "../../../conversationAssistances/domain/interfaces/InsertConversationAssistance.interface";
+import { ConversationAssistances } from "../../../conversationAssistances/domain/interfaces/ConversationAssistance.interface";
+import { SupabaseService } from "../../../shared/infrastructure/supabase/SupabaseClient";
 
 export class ConversationAssistanceRepository
   implements ConversationAssistancesRepositoryInterface

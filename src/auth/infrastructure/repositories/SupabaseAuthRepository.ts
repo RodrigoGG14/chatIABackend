@@ -1,6 +1,6 @@
-import { AuthRepositoryInterface } from "@/auth/domain/interfaces/AuthRepository.interface";
-import { SupabaseService } from "@/shared/infrastructure/supabase/SupabaseClient";
-import { LoginRequestDTO } from "@/auth/application/DTOs/LoginRequestDTO";
+import { AuthRepositoryInterface } from "../../domain/interfaces/AuthRepository.interface";
+import { SupabaseService } from "../../../shared/infrastructure/supabase/SupabaseClient";
+import { LoginRequestDTO } from "../../application/DTOs/LoginRequestDTO";
 
 export class SupabaseAuthRepository implements AuthRepositoryInterface {
   private readonly client = new SupabaseService().getClient();

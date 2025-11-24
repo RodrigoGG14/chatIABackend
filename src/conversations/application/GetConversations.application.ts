@@ -1,7 +1,7 @@
-import { ConversationRepositoryInterface } from "@/conversations/domain/interfaces/ConversationRepository.interface";
-import { GetConversationsResponseDTO } from "@/conversations/application/DTOs/GetConversationsResponseDTO";
-import { UserRepositoryInterface } from "@/users/domain/interfaces/UserRepository.interface";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { UserRepositoryInterface } from "../../users/domain/interfaces/UserRepository.interface";
+import { ConversationRepositoryInterface } from "../domain/interfaces/ConversationRepository.interface";
+import { GetConversationsResponseDTO } from "./DTOs/GetConversationsResponseDTO";
+import { ApiResponse } from "../../shared/application/ApiResponse";
 
 export class GetConversationsUseCase {
   constructor(

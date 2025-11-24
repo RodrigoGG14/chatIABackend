@@ -1,4 +1,4 @@
-import { Database } from "@/shared/infrastructure/supabase/database";
+import { Database } from "../../../shared/infrastructure/supabase/database";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 export class SupabaseService {

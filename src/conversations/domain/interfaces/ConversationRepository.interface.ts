@@ -1,8 +1,5 @@
-import { ConversationInsertInterface } from "@/conversations/domain/interfaces/ConversationInsert.interfaces";
-import {
-  ConversaionCategory,
-  ConversationInterface,
-} from "@/conversations/domain/interfaces/Conversation.interface";
+import { ConversaionCategory, ConversationInterface } from "./Conversation.interface";
+import { ConversationInsertInterface } from "./ConversationInsert.interfaces";
 import { InsertMessageCascadeResult } from "./InsertMessageCascadeResult.interface";
 
 export interface ConversationRepositoryInterface {

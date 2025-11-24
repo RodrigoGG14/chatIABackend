@@ -1,7 +1,9 @@
-import { ConversationRepositoryInterface } from "@/conversations/domain/interfaces/ConversationRepository.interface";
-import { ConversationInsertInterface } from "@/conversations/domain/interfaces/ConversationInsert.interfaces";
-import { ConversationInterface } from "@/conversations/domain/interfaces/Conversation.interface";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { ApiResponse } from "../../shared/application/ApiResponse";
+import { ConversationInterface } from "../domain/interfaces/Conversation.interface";
+import { ConversationInsertInterface } from "../domain/interfaces/ConversationInsert.interfaces";
+import { ConversationRepositoryInterface } from "../domain/interfaces/ConversationRepository.interface";
+
+
 
 export class InsertConversationUseCase {
   constructor(

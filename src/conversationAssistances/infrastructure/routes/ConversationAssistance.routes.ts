@@ -1,6 +1,6 @@
-import { ConversationAssistanceController } from "@/conversationAssistances/infrastructure/controllers/ConversationAssistance.controller";
 // import { VerifyAuthMiddleware } from "@/shared/infrastructure/middlewares/verifyAuthMiddleware";
 import { Router } from "express";
+import { ConversationAssistanceController } from "../controllers/ConversationAssistance.controller";
 
 const ConversationAssistanceRoutes: Router = Router();
 const controller = new ConversationAssistanceController();

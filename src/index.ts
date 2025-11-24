@@ -4,11 +4,11 @@ import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-import UserRoutes from "@/users/infrastructure/routes/User.routes";
-import ConversationRoutes from "@/conversations/infrastructure/routes/Conversation.routes";
-import MessageRoutes from "@/messages/infrastructure/routes/Message.routes";
-import ConversationAssistanceRoutes from "@/conversationAssistances/infrastructure/routes/ConversationAssistance.routes";
-import Authrouter from "@/auth/infrastructure/routes/AuthRoutes";
+import UserRoutes from "./users/infrastructure/routes/User.routes";
+import ConversationRoutes from "./conversations/infrastructure/routes/Conversation.routes";
+import MessageRoutes from "./messages/infrastructure/routes/Message.routes";
+import ConversationAssistanceRoutes from "./conversationAssistances/infrastructure/routes/ConversationAssistance.routes";
+import Authrouter from "./auth/infrastructure/routes/AuthRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 3000;

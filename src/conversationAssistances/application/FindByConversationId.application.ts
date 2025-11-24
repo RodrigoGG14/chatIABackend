@@ -1,6 +1,6 @@
-import { ConversationAssistancesRepositoryInterface } from "@/conversationAssistances/domain/interfaces/ConversationAssistanceRepository.interface";
-import { ConversationAssistances } from "@/conversationAssistances/domain/interfaces/ConversationAssistance.interface";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { ApiResponse } from "../../shared/application/ApiResponse";
+import { ConversationAssistancesRepositoryInterface } from "../domain/interfaces/ConversationAssistanceRepository.interface";
+import { ConversationAssistances } from "../domain/interfaces/ConversationAssistance.interface";
 
 export class FindConversationAssistanceByConversationIdUseCase {
   constructor(

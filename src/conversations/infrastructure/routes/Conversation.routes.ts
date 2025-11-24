@@ -1,7 +1,8 @@
-import { ConversationController } from "@/conversations/infrastructure/controllers/Conversation.controller";
 // import { VerifyAuthMiddleware } from "@/shared/infrastructure/middlewares/verifyAuthMiddleware";
-import { upload } from "@/shared/infrastructure/multerConfig";
+
 import { Router } from "express";
+import { ConversationController } from "../controllers/Conversation.controller";
+import { upload } from "../../../shared/infrastructure/multerConfig";
 
 const ConversationRoutes: Router = Router();
 const controller = new ConversationController();

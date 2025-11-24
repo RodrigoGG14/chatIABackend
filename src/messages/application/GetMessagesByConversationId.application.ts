@@ -1,6 +1,8 @@
-import { FindMessagesByConversationIdResponseDTO } from "@/messages/application/DTOs/FindMessagesByConversationIdResponseDTO";
-import { MessageRepositoryInterface } from "@/messages/domain/interfaces/MessageRepository.interface";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { ApiResponse } from "../../shared/application/ApiResponse";
+import { MessageRepositoryInterface } from "../domain/interfaces/MessageRepository.interface";
+import { FindMessagesByConversationIdResponseDTO } from "./DTOs/FindMessagesByConversationIdResponseDTO";
+
+
 
 export class GetMessagesByConversationIdUseCase {
   constructor(private readonly messageRepository: MessageRepositoryInterface) {}

@@ -1,9 +1,9 @@
-import { UserRepository } from "@/users/infrastructure/repositories/User.repository";
-import { UserInterface } from "@/users/domain/interfaces/User.interface";
+import { UserRepository } from "../../../users/infrastructure/repositories/User.repository";
+import { UserInterface } from "../../../users/domain/interfaces/User.interface";
 
-import { FindUserByUserIdUseCase } from "@/users/application/FindByUserId.application";
-import { GetUsersUseCase } from "@/users/application/GetUsers.application";
-import { ApiResponse } from "@/shared/application/ApiResponse";
+import { FindUserByUserIdUseCase } from "../../../users/application/FindByUserId.application";
+import { GetUsersUseCase } from "../../../users/application/GetUsers.application";
+import { ApiResponse } from "../../../shared/application/ApiResponse";
 
 import { Request, Response } from "express";
 

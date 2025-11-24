@@ -1,6 +1,6 @@
-import { SupabaseAuthRepository } from "@/auth/infrastructure/repositories/SupabaseAuthRepository";
-import { AuthController } from "@/auth/infrastructure/controllers/AuthController";
-import { LoginUseCase } from "@/auth/application/LoginUseCase";
+import { SupabaseAuthRepository } from "../../infrastructure/repositories/SupabaseAuthRepository";
+import { AuthController } from "../../infrastructure/controllers/AuthController";
+import { LoginUseCase } from "../../application/LoginUseCase";
 import { Router } from "express";
 
 const Authrouter: Router = Router();
